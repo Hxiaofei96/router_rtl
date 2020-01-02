@@ -33,10 +33,65 @@ module rtr_top
   (clk, reset, router_address, channel_in_ip, flow_ctrl_out_ip, channel_out_op, 
    flow_ctrl_in_op, error);
    
-`include "c_functions.v"
+
 `include "c_constants.v"
 `include "rtr_constants.v"
-   
+   //==============================================================================
+// global function definitions
+//==============================================================================
+
+// compute ceiling of binary logarithm
+function integer clogb(input integer argument);
+   integer 		     i;
+   begin
+      clogb = 0;
+      for(i = argument - 1; i > 0; i = i >> 1)
+	clogb = clogb + 1;
+   end
+endfunction
+
+// compute ceiling of base-th root of argument
+function integer croot(input integer argument, input integer base);
+   integer i;
+   integer j;
+   begin
+      croot = 0;
+      i = 0;
+      while(i < argument)
+	begin
+	   croot = croot + 1;
+	   i = 1;
+	   for(j = 0; j < base; j = j + 1)
+	     i = i * croot;
+	end
+   end
+endfunction
+
+// population count (count ones)
+function integer pop_count(input integer argument);
+   integer i;
+   begin
+      pop_count = 0;
+      for(i = argument; i > 0; i = i >> 1)
+	pop_count = pop_count + (i & 1);
+   end
+endfunction
+
+// compute the length of the longest disjoint suffix among two values
+function integer suffix_length(input integer value1, input integer value2);
+   integer v1, v2;
+   begin
+      v1 = value1;
+      v2 = value2;
+      suffix_length = 0;
+      while(v1 != v2)
+	begin
+	   suffix_length = suffix_length + 1;
+	   v1 = v1 >> 1;
+	   v2 = v2 >> 1;
+	end
+   end
+endfunction
    
    //---------------------------------------------------------------------------
    // parameters
